@@ -8,12 +8,16 @@ import {
   ActivityIndicator,
   TouchableOpacity
    } from 'react-native';
-import Category from './components/Category';
+import Splash from './components/Splash';
 import PageHeader from './components/PageHeader';
 import Navigator from './routes/HomeStack';
 import { AppLoading } from "expo";
 import { Ionicons } from '@expo/vector-icons';
 import * as Font from 'expo-font';
+import {Provider} from 'react-redux';
+import {createStore, applyMiddleware} from 'redux';
+import { NavigationContainer } from 'react-navigation';
+import reducers from './reducers';
 
 export default class App extends Component {
   constructor() {
@@ -35,11 +39,14 @@ export default class App extends Component {
   
   render(){
     return (
-      
-      <Navigator/>
+      <Provider store={store}>
+        <Splash/>
+      </Provider>
     );
   }
 }
+
+const store = createStore(reducers);
 
 
 

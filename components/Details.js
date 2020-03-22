@@ -15,7 +15,9 @@ import{
     CardItem,Left,Right,Content,Grid,Text,
     Col,Button,Icon, Subtitle,Thumbnail
 } from 'native-base';
-
+import {bindActionCreators} from 'redux';
+import {addToCartAction} from '../redux/cart_action';
+import {connect} from 'react-redux';
 
 class Details extends Component{
     
@@ -48,7 +50,7 @@ class Details extends Component{
             return response.json();      
         })
         .then((contents)=>{
-            console.log(contents);
+            
             this.setState({
 
                 dataSource: contents.stock_list,
@@ -61,15 +63,31 @@ class Details extends Component{
             console.log(error)
         })
     }
+
+    addToCart = (item) =>{    
+
+        this.props.addToCartAction({
+            id:item.idstockdetails,
+            name:item.name,
+            price:item.stockprice,
+            qty:1,
+            details:[]
+        });
+    }
     
     
   
     render(){
+        console.log(this.addToCart);
         const item=this.state.vendor;
         
         const category = [];
         const stock = this.state.dataSource;
         const stocklist=[];
+
+        const addToCartSetup=(item)=>{
+            this.addToCart(item);
+        }
 
         if(stock.length>0){
             
@@ -83,7 +101,10 @@ class Details extends Component{
                         <View key={key}>
                             <Title style={{color:'black', fontSize:15,}}>{key}</Title>  
                             {stock[i][key].map((row, index) => (
-                                <TouchableOpacity key={row.idstockdetails}>
+                                
+                               
+                                <TouchableOpacity key={row.idstockdetails}  onPress={()=>addToCartSetup(row)}>
+                                
                                     <Card>
                                         <CardItem style={{height:40}}>
                                             <Left>
@@ -133,7 +154,7 @@ class Details extends Component{
                             <CardItem header>
                                 <Icon name="map" style={{color:'#ffb200'}}/>
                                     <Title style={{color:'black'}}>{item[0].store_name}</Title>
-                                <Icon name="heart" style={{color:'#ffb200'}}/>
+                                <Icon name="heart" style={{color:'#ffb200'}} />
                             </CardItem>
                             
                         </Card>
@@ -155,5 +176,17 @@ const styles = StyleSheet.create({
   },
 });
 
+const mapStateToProp = (state) =>{
 
-export default Details;
+    return {
+        cart:state.cart
+    }
+}
+
+const mapActionstoProps = (dispatch) => {
+    return bindActionCreators({
+        addToCartAction
+    },dispatch)
+}
+
+export default connect(mapStateToProp,mapActionstoProps)(Details);

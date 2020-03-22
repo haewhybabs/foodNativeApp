@@ -8,6 +8,7 @@ import Splash from '../components/Splash';
 import Category from '../components/Category';
 import Vendors from '../components/List';
 import Details from '../components/Details';
+import CartIcon from '../components/CartIcon';
 import Cart from '../components/Cart';
 
 
@@ -37,8 +38,10 @@ const screens = {
             headerRight: (
                 <TouchableOpacity
                     onPress={() => navigation.navigate('Cart')}>
-                    <Text>Checkout</Text>
+
+                    <CartIcon/>
                 </TouchableOpacity>
+               
             )
             
             
