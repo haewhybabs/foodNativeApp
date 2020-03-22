@@ -14,6 +14,7 @@ import{
 } from 'native-base';
 
 import {connect} from 'react-redux';
+import { FlatList } from 'react-native-gesture-handler';
 
 class Cart extends Component{
     
@@ -28,47 +29,38 @@ class Cart extends Component{
     }
     
    
+    renderItem = ({item,index}) =>{
+      
+      return(
+        <Card>
+          <CardItem>
+            <Left>
+              <Thumbnail
+                source={require('../assets/img/shopping-icon.svg')}
+                style={{width:40,height:30}}
+              />  
+              <View style={{alignItems:'flex-start', top:-5}}>
+                <Subtitle style={{color:'black', marginLeft:6}}>{item.name}</Subtitle>
+                <Text style={{marginLeft:10}}>Sub Title</Text>
+                
+                <Subtitle style={{color:'black', marginLeft:6}}>‎₦ {item.price}</Subtitle>
+              </View>
+            </Left>
+
+            <Right>
+              <Subtitle style={{color:'black', marginLeft:6}}>{item.qty}</Subtitle>
+              <TouchableOpacity>
+                <Subtitle style={{color:'red'}}>Remove</Subtitle>
+              </TouchableOpacity>
+            </Right>
+          </CardItem>
+        </Card>
+      )
+  }
 
   
     render(){
-      // console.log(this.props.cart)
-      const cartList=[];
-      const cart=this.props.cart;
-      if(cart.length>0){
-
-        for(let i=0; i<cart.length; i++){
-          
-          
-          cartList.push(
-
-            <Card key={cart[i].id}>
-              <CardItem>
-                <Left>
-                  <Thumbnail
-                    source={require('../assets/img/shopping-icon.svg')}
-                    style={{width:40,height:30}}
-                  />  
-                  <View style={{alignItems:'flex-start', top:-5}}>
-                    <Subtitle style={{color:'black', marginLeft:6}}>{cart[i].name}</Subtitle>
-                    <Text style={{marginLeft:10}}>Sub Title</Text>
-                    
-                    <Subtitle style={{color:'black', marginLeft:6}}>‎₦ {cart[i].price}</Subtitle>
-                  </View>
-                </Left>
-
-                <Right>
-                  <Subtitle style={{color:'black', marginLeft:6}}>{cart[i].qty}</Subtitle>
-                  <TouchableOpacity>
-                    <Subtitle style={{color:'black'}}>Remove</Subtitle>
-                  </TouchableOpacity>
-                </Right>
-              </CardItem>
-            </Card>
-          );
-        };
-      }
-
-
+   
         return (  
           <Container style={{backgroundColor:'#efefef'}}>   
             <Content>
@@ -81,7 +73,13 @@ class Cart extends Component{
               </Card>
               
               
-              {cartList}
+             
+              <FlatList
+              data={this.props.cart}
+              keyExtractor={(item,index)=>index.toString()}
+              renderItem={this.renderItem}
+              />
+              
 
                <Button title="Checkout" onPress={this.checkoutHandler} color='#ffb200'/>
               
