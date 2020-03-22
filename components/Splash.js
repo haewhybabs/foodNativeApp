@@ -58,7 +58,21 @@ const screens = {
         screen: Category
     },
     Vendors: {
-        screen: Vendors
+        screen: Vendors,
+        navigationOptions:({navigation}) => ({
+            
+            headerBackTitle: null,
+            headerRight: (
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('Cart')}>
+
+                    <CartIcon/>
+                </TouchableOpacity>
+               
+            )
+            
+            
+        }),
     },
     Details: {
         screen: Details,
@@ -79,7 +93,21 @@ const screens = {
 
     },
     Cart: {
-        screen: Cart
+        screen: Cart,
+        navigationOptions:({navigation}) => ({
+            
+            headerBackTitle: null,
+            headerRight: (
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('Cart')}>
+
+                    <CartIcon/>
+                </TouchableOpacity>
+               
+            )
+            
+            
+        }),
     },
 }
 const HomeStack =createStackNavigator(screens);

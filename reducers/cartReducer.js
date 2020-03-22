@@ -1,4 +1,5 @@
 import { ADD_TO_CART } from '../redux/cart_action';
+import { REMOVE_FROM_CART } from '../redux/cart_action';
 const initial_state = [{
     id: 4,
     name: 'Amala',
@@ -13,7 +14,6 @@ export default function cartReducer(state = [], action = {}) {
             {
                 const product = action.payload;
                 const cart = state;
-                console.log(action.payload);
                 const existingProductIndex = findProductIndex(cart, product.id);
 
 
@@ -22,7 +22,10 @@ export default function cartReducer(state = [], action = {}) {
                 return updatedCart;
 
             }
-            // case 'REMOVE_FROM_CART':
+        case REMOVE_FROM_CART:
+            {
+                return state.filter(cartItem => cartItem.id !== action.payload.id)
+            }
     }
     return state
 }
@@ -46,7 +49,7 @@ const updateProductUnits = (cart, product) => {
 
     const updatedUnitsProduct = {
         ...existingProduct,
-        qty: existingProduct.qty + product.qty
+        qty: product.qty
     };
 
     updatedCart[productIndex] = updatedUnitsProduct;
