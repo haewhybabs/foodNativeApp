@@ -40,6 +40,7 @@ const findProductIndex = (cart, productID) => {
 
 /*Update cart with the product index*/
 const updateProductUnits = (cart, product) => {
+
     const productIndex = findProductIndex(cart, product.id);
 
     /*Push the entire cart to updatedCart*/
@@ -49,7 +50,8 @@ const updateProductUnits = (cart, product) => {
 
     const updatedUnitsProduct = {
         ...existingProduct,
-        qty: product.qty
+        qty: product.qty,
+        details: product.details
     };
 
     updatedCart[productIndex] = updatedUnitsProduct;

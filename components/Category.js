@@ -20,12 +20,9 @@ export default class Category extends Component{
             isLoading:true
         }
 
-        this.navigate = this.navigate.bind(this)
+        
     }
 
-    navigate(route){
-
-    }
 
     componentDidMount(){
     

@@ -9,6 +9,12 @@ import {
   TouchableOpacity,
   Dimensions
    } from 'react-native';
+
+import{
+    Container,Header,Body,CheckBox,Title,Card,
+    CardItem,Left,Right,Content,Grid,
+    Col,Button,Icon, Subtitle,Thumbnail
+} from 'native-base';
 import {apiUrl,token,vendorImage} from '../Config';
 
 export default class List extends Component {
@@ -53,20 +59,40 @@ export default class List extends Component {
         let {container,cardText,card,cardImage} =styles
         return(
 
-            <View style={container}>
-                <TouchableOpacity style={card} onPress={() => this.props.navigation.navigate('Details',item)}>
-                    <Image style={cardImage} source ={{uri:vendorImage+item.logo}}/>
-                    <Text style={cardText}>{item.store_name}</Text>
+            <Card>
+                <CardItem>
+                    <TouchableOpacity style={card} onPress={() => this.props.navigation.navigate('Details',item)}>
+                        <Image
+                            source ={{uri:vendorImage+item.logo}}
+                            style={{width:'100%',height:200}}
+                        />  
+                        <Title style={{color:'black'}}> {item.store_name} </Title>
 
-                    <View style={{flex:1,flexDirection:'row'}}>
-                        <Text style={{marginTop:15}}>Opens at {item.open_at}</Text>
-                        <View style={{flex:1}}>
-                            <Text style={{textAlign: 'right', marginTop:15}}>Closes at{item.close_at}</Text>
-                        </View>
+                        <Left>
+                            <Subtitle style={{color:'black'}}>Opens at {item.open_at}</Subtitle>
+                        </Left>
+
+                        <Right>
+                            <Subtitle style={{color:'black'}}>Closes at{item.close_at}</Subtitle>
+                        </Right>     
+                    </TouchableOpacity>
+                </CardItem>
+            </Card>
+
+            // <View style={container}>
+            //     <TouchableOpacity style={card} onPress={() => this.props.navigation.navigate('Details',item)}>
+            //         <Image style={cardImage} source ={{uri:vendorImage+item.logo}}/>
+            //         <Text style={cardText}>{item.store_name}</Text>
+
+            //         <View style={{flex:1,flexDirection:'row'}}>
+            //             <Text style={{marginTop:15}}>Opens at {item.open_at}</Text>
+            //             <View style={{flex:1}}>
+            //                 <Text style={{textAlign: 'right', marginTop:15}}>Closes at{item.close_at}</Text>
+            //             </View>
                         
-                    </View>
-                </TouchableOpacity>                
-            </View>
+            //         </View>
+            //     </TouchableOpacity>                
+            // </View>
         )
     }
 
@@ -94,14 +120,34 @@ export default class List extends Component {
             </View>
 
             :
-            <FlatList
 
-                style={styles.container}
-                data={this.state.dataSource}
-                keyExtractor={(item,index) =>index.toString()}
-                renderItem={this.renderItem}
+            <Container style={{backgroundColor:'#efefef'}}>   
                 
-            />
+                
+                <Content>
+                    <Card style={{alignItems:'center'}}>
+                        <CardItem header>
+                            <Icon name="map" style={{color:'#ffb200'}}/>
+                                <Title style={{color:'black'}}>Our Vendors</Title>
+                            <Icon name="heart" style={{color:'#ffb200'}} />
+                        </CardItem>
+                        
+                    </Card>
+
+                    <FlatList
+
+                        style={styles.container}
+                        data={this.state.dataSource}
+                        keyExtractor={(item,index) =>index.toString()}
+                        renderItem={this.renderItem}
+                        
+                    />
+
+                </Content>
+            </Container>
+
+
+           
             
         );
     }
