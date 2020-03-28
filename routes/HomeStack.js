@@ -9,7 +9,8 @@ import Category from '../components/Category';
 import Vendors from '../components/List';
 import Details from '../components/Details';
 import CartIcon from '../components/CartIcon';
-import Cart from '../components/Cart';
+import Login from '../components/Login';
+import Register from '../components/Register';
 
 
 const screens = {
@@ -51,6 +52,12 @@ const screens = {
     Cart: {
         screen: Cart
     },
+    Login:{
+        screen:Login
+    },
+    Register:{
+        screen:Register
+    }
 }
 const HomeStack = createStackNavigator(screens);
 

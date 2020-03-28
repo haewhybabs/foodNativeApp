@@ -32,7 +32,7 @@ export default class List extends Component {
     
         const proxyurl = 'https://cors-anywhere.herokuapp.com/';
         const url = apiUrl+'category/'+this.props.navigation.getParam('idcategories'); 
-        fetch(proxyurl+url,{headers: {'Content-Type': 'application/json','token':token}})
+        fetch(url,{headers: {'Content-Type': 'application/json','token':token}})
         .then(response => {
             if (!response.ok) {                      
                 throw new Error(                    

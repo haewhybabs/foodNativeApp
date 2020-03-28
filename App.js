@@ -8,8 +8,10 @@ import {
   ActivityIndicator,
   TouchableOpacity
    } from 'react-native';
+   import {Container, Header, Content
+    , Footer, FooterTab,Button, Subtitle} from 'native-base';
 import Splash from './components/Splash';
-import PageHeader from './components/PageHeader';
+import FooterBase from './components/Footer';
 import Navigator from './routes/HomeStack';
 import { AppLoading } from "expo";
 import { Ionicons } from '@expo/vector-icons';
@@ -35,13 +37,23 @@ export default class App extends Component {
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
     });
     this.setState({ loading: false });
-}
+  }
   
   render(){
     return (
+      <Container>
       <Provider store={store}>
         <Splash/>
+        <Footer>
+          <FooterTab>
+            
+              <Button full warning>
+                  <Subtitle>Healthy food without stress</Subtitle>
+              </Button>
+          </FooterTab>
+        </Footer>
       </Provider>
+      </Container>
     );
   }
 }

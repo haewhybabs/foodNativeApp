@@ -48,10 +48,22 @@ const updateProductUnits = (cart, product) => {
     /*Current Product to update*/
     const existingProduct = updatedCart[productIndex];
 
+    // const totalAmount = product.price;
+    // const detailAmount = 0;
+
+    // if (product.details.length > 0) {
+
+    //     for (let i = 0; i < product.details.length; i++) {
+    //         detailAmount = detailAmount + product.details[i].price;
+    //     }
+    //     totalAmount = totalAmount + detailAmount;
+    // }
+
     const updatedUnitsProduct = {
         ...existingProduct,
         qty: product.qty,
-        details: product.details
+        details: product.details,
+        // price: totalAmount
     };
 
     updatedCart[productIndex] = updatedUnitsProduct;

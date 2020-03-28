@@ -35,7 +35,7 @@ class Details extends Component{
             mainMealCategory:[],
             supplements:[],
             checkedSupplements:[],
-            checked:true
+            currentItem:[],
 
           
         }
@@ -49,7 +49,7 @@ class Details extends Component{
     
         const proxyurl = 'https://cors-anywhere.herokuapp.com/';
         const url =apiUrl+'vendor/'+this.props.navigation.getParam('idvendors'); // site that doesn’t send Access-Control-*
-        fetch(proxyurl+url,{headers: {'Content-Type': 'application/json','token':token}}) // https://cors-anywhere.herokuapp.com/https://example.com
+        fetch(url,{headers: {'Content-Type': 'application/json','token':token}}) // https://cors-anywhere.herokuapp.com/https://example.com
         .then(response => {
             if (!response.ok) {                      // *** Check errors
                 throw new Error(                     // ***
@@ -88,27 +88,12 @@ class Details extends Component{
                 qty:1,
                 details:[]
             });
-        }
-
-        else{
-
-            this.props.addToCartAction({
-                id:item.idstockdetails,
-                name:item.name,
-                price:item.stockprice,
-                qty:1,
-                details:this.state.checkedSupplements
-            });
-        }
-        
-        
-        
+        }    
     }
 
 
   
     render(){
-        console.log(this.props.cart);
         const state=this.state;
         const item=state.vendor;
         
@@ -124,8 +109,10 @@ class Details extends Component{
 
 
             if(status==true){
+
                 this.setState({
-                    modalOpen:status
+                    modalOpen:status,
+                    currentItem:item
                 })
             }
         }
@@ -142,48 +129,70 @@ class Details extends Component{
         }
         
         /*Checkbox select and update cart */
-        const formUpdate = (item,checked,row)=>{
+        const supplementSelect = (item)=>{
 
             const id = item.idstockdetails;
-            
-            if(checked==true){
+
+            /**Check if the id is already in checked supplements */
+            if(state.checkedSupplements.some(itemId=>id===itemId)){
                 this.setState((state) => ({
-                    checkedSupplements: [...state.checkedSupplements, item]
-                }),()=>{
-
-
-                    
-                    this.addToCart(row,true);
-                    
-                    
-                })
-                
-                
-                
-
-                this.setState({
-                    checked:false
-                }) 
-                
-                
+                    checkedSupplements: state.checkedSupplements.filter(el => el!= id)
+                }))
             }
             else{
                 this.setState((state) => ({
-                    checkedSupplements: state.checkedSupplements.filter(el => el.idstockdetails != id)
-                }),()=>{
-
-                    this.addToCart(row,true);
-                })
-
-                
-
-                this.setState({
-                    checked:true
-                })
-
-                
+                    checkedSupplements: [...state.checkedSupplements, item.idstockdetails]
+                }))
+            
             }
 
+         
+        }
+
+        const supplementSubmit = ()=>{
+
+            const currentItem = state.currentItem;
+            const supplements = state.supplements;
+            const checkedSupplementId = state.checkedSupplements;
+            const checkedSupplements=[];
+
+            var amount=0;
+
+            if(checkedSupplementId.length>0){
+
+                for (let i =0; i<supplements.length; i++){
+                    for (let j =0; j<checkedSupplementId.length; j++){
+                        if(supplements[i].idstockdetails==checkedSupplementId[j]){
+                            checkedSupplements.push(supplements[i]);
+                        }
+                    }
+                }
+                
+                
+
+                for (let k=0; k<checkedSupplements.length; k++){
+                    amount = amount+checkedSupplements[k].stockprice;
+                }
+            }
+
+            const item = {
+
+                id:currentItem.idstockdetails,
+                name:currentItem.name,
+                price:currentItem.stockprice + amount,
+                qty:1,
+                details:checkedSupplements
+            }
+
+            this.props.addToCartAction(item);
+
+            this.setState({
+                modalOpen:false,
+                currentItem:[],
+                checkedSupplements:[]
+
+
+            })
             
         }
 
@@ -207,31 +216,7 @@ class Details extends Component{
                                 state.soupCategory.name==key || state.mainMealCategory.name==key?
 
                                 <TouchableOpacity key={row.idstockdetails}  onPress={()=>addToCartSetup(row,true)}>
-                                    <Modal visible={state.modalOpen}>
-                                        <View>                                            
-                                            <MaterialIcons
-                                                name='close'
-                                                size={24}
-                                                style={styles.modalToggle}
-                                                onPress={()=>modalCheck(false)}
-                                            />
-                                            <Title style={{color:'black', marginTop:10}}>Select the supplement for this meal</Title>
-                                            {state.supplements.map((item, index) => (
-                                                <Grid style={{marginTop:30}} key={item.idstockdetails}>
-                                                    <Col>
-                                                        <CheckBox onPress={()=>formUpdate(item,state.checked,row)} checked={state.checkedSupplements.includes(item)} />
-                                                    </Col>
-                                                    <Col>
-                                                        <Subtitle style={{color:'black'}}>{item.name}</Subtitle>
-                                                    </Col>
-
-                                                    <Col>
-                                                        <Subtitle style={{color:'black'}}>‎₦ {item.stockprice}</Subtitle>
-                                                    </Col>  
-                                                </Grid>
-                                            ))}
-                                        </View>
-                                    </Modal>
+                                   
                                         
                                     <Card>
                                         <CardItem style={{height:40}}>
@@ -307,6 +292,42 @@ class Details extends Component{
             
             
                 <Container style={{backgroundColor:'#efefef'}}>   
+
+
+                <Modal visible={state.modalOpen}>
+                    <View>                                            
+                        <MaterialIcons
+                            name='close'
+                            size={24}
+                            style={styles.modalToggle}
+                            onPress={()=>modalCheck(false)}
+                        />
+                        <Title style={{color:'black', marginTop:10}}>Select the supplement for this meal</Title>
+                        {state.supplements.map((item, index) => (
+                            <Grid style={{marginTop:30}} key={item.idstockdetails}>
+                                <Col>
+                                    <CheckBox onPress={()=>supplementSelect(item)} checked={state.checkedSupplements.includes(item.idstockdetails)} />
+                                </Col>
+                                <Col>
+                                    <Subtitle style={{color:'black'}}>{item.name}</Subtitle>
+                                </Col>
+
+                                <Col>
+                                    <Subtitle style={{color:'black'}}>‎₦ {item.stockprice}</Subtitle>
+                                </Col>  
+                            </Grid>
+
+                            
+                        ))}
+
+                        <View style={{marginTop:50}}>
+
+                            <Button warning full onPress={()=>supplementSubmit()}>
+                                <Text>Submit</Text>
+                            </Button>
+                        </View>
+                    </View>
+                </Modal>
                 
                 
                     <Content>

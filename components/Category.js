@@ -28,7 +28,7 @@ export default class Category extends Component{
     
         const proxyurl = 'https://cors-anywhere.herokuapp.com/';
         const url =apiUrl+'categories'; // site that doesn’t send Access-Control-*
-        fetch(proxyurl+url,{headers: {'Content-Type': 'application/json','token':token}}) // https://cors-anywhere.herokuapp.com/https://example.com
+        fetch(url,{headers: {'Content-Type': 'application/json','token':token}}) // https://cors-anywhere.herokuapp.com/https://example.com
         .then(response => {
             if (!response.ok) {                      // *** Check errors
                 throw new Error(                     // ***

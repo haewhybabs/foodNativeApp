@@ -1,6 +1,6 @@
 const token = "HdFDjada4da";
-const apiUrl = "https://foodxyme.com/api/";
-const vendorImage = "https://foodxyme.com/vendorimages/";
+const apiUrl = "http://192.168.43.36:8000/api/";
+const vendorImage = "http://192.168.43.36:8000/api/vendorimages/";
 export {
     token,
     apiUrl,

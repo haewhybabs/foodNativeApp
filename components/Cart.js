@@ -28,7 +28,7 @@ class Cart extends Component{
 
     
     checkoutHandler(){
-
+      this.props.navigation.navigate('Login');
     }
     
     removeCartAction = (item) =>{    
@@ -47,7 +47,7 @@ class Cart extends Component{
         cart.qty=cart.qty;
         
       }
-      console.log(cart);
+     
       this.props.addToCartAction(cart);
 
 
@@ -55,6 +55,7 @@ class Cart extends Component{
 
   
     render(){
+
      
       const cartList=[];
       const cart=this.props.cart;
@@ -78,7 +79,11 @@ class Cart extends Component{
                   />  
                   <View style={{alignItems:'flex-start', top:-5}}>
                     <Subtitle style={{color:'black', marginLeft:6}}>{cart[i].name}</Subtitle>
-                    <Text style={{marginLeft:10}}>Sub Title</Text>
+
+                    {cart[i].details.map((row, index) => (
+                      <Text style={{marginLeft:10}}>{row.name}</Text>
+                    ))}
+                   
                     
                     <Subtitle style={{color:'black', marginLeft:6}}>‎₦ {cart[i].price * cart[i].qty}</Subtitle>
                   </View>

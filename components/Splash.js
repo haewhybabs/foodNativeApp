@@ -13,6 +13,8 @@ import Details from './Details';
 import CartIcon from './CartIcon';
 import Cart from './Cart';
 import HomeScreen from './HomeScreen';
+import Login from '../components/Login';
+import Register from '../components/Register';
 
 class Splash extends Component{
     
@@ -109,6 +111,12 @@ const screens = {
             
         }),
     },
+    Login:{
+        screen:Login
+    },
+    Register:{
+        screen:Register
+    }
 }
 const HomeStack =createStackNavigator(screens);
 
