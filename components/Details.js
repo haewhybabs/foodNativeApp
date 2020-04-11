@@ -20,6 +20,7 @@ import {bindActionCreators} from 'redux';
 import {addToCartAction} from '../redux/cart_action';
 import {connect} from 'react-redux';
 import {materialIcons, MaterialIcons} from '@expo/vector-icons';
+import {AsyncStorage} from 'react-native';
 
 class Details extends Component{
     
@@ -77,23 +78,63 @@ class Details extends Component{
         })
     }
 
-    addToCart = (item,modalStatus) =>{    
+    addToCart = async(item,modalStatus) =>{    
+
+    
+        
+        this._storeData();
+
+        let Vendor = await AsyncStorage.getItem('cartVendor');
+        let vendorCart = JSON.parse(Vendor);
 
         if(modalStatus==false){
 
-            this.props.addToCartAction({
-                id:item.idstockdetails,
-                name:item.name,
-                price:item.stockprice,
-                qty:1,
-                details:[]
-            });
+            if(vendorCart.id == this.state.vendor[0].idvendors){
+                this.props.addToCartAction({
+                    id:item.idstockdetails,
+                    name:item.name,
+                    price:item.stockprice,
+                    qty:1,
+                    details:[]
+                });
+            }
+
+            else{
+
+                alert('Kindly checkout with '+ vendorCart.name + ' before you add a new item');
+            }
+
+            
         }    
+    }
+
+    _retrieveData = async()=> {
+
+        let Vendor = await AsyncStorage.getItem('cartVendor');
+        let vendorCart = JSON.parse(Vendor);
+        return vendorCart;
+    };
+
+    _storeData()
+    {
+        let cartVendor = {
+            name:this.state.vendor[0].store_name,
+            id:this.state.vendor[0].idvendors
+        };
+
+        if(this.props.cart.length==0){
+
+            AsyncStorage.setItem('cartVendor',
+            JSON.stringify(cartVendor));
+
+            return cartVendor;
+        }
     }
 
 
   
     render(){
+        
         const state=this.state;
         const item=state.vendor;
         
@@ -104,6 +145,9 @@ class Details extends Component{
 
         /* Add to cart and Open Modal */
         const addToCartSetup=(item,status)=>{
+             
+            
+
             this.addToCart(item,status);
 
 
@@ -149,7 +193,7 @@ class Details extends Component{
          
         }
 
-        const supplementSubmit = ()=>{
+        const supplementSubmit = async()=>{
 
             const currentItem = state.currentItem;
             const supplements = state.supplements;
@@ -184,7 +228,20 @@ class Details extends Component{
                 details:checkedSupplements
             }
 
-            this.props.addToCartAction(item);
+
+            this._storeData();
+
+            let Vendor = await AsyncStorage.getItem('cartVendor');
+            let vendorCart = JSON.parse(Vendor);
+
+           if(vendorCart.id == this.state.vendor[0].idvendors){
+                this.props.addToCartAction(item);
+            }
+
+            else{
+
+                alert('Kindly checkout with '+ vendorCart.name + ' before you add a new item');
+            }
 
             this.setState({
                 modalOpen:false,
@@ -369,7 +426,8 @@ const styles = StyleSheet.create({
 const mapStateToProp = (state) =>{
 
     return {
-        cart:state.cart
+        cart:state.cart,
+        user:state.user
     }
 }
 

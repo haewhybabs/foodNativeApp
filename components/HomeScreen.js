@@ -13,13 +13,12 @@ class HomeScreen extends Component{
 
         this.state = {
             dataSource:[],
-            isLoading:true
+            isLoading:true,
+            userdetails:[]
         }
   
        
     }
-
-    
     
     
     pressHandler =  () =>{

@@ -3,45 +3,186 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
+  AsyncStorage,
+  Keyboard,
+  ActivityIndicator
    } from 'react-native';
 
 import{
     Container,Header,Body,CheckBox,Title,Card,
     CardItem,Left,Right,Content,Grid,Text,
-    Col,Button,Icon, Subtitle
+    Col,Button,Icon, Subtitle,Form, Item, Input,Label,Row,Toast,Root
 } from 'native-base';
+import {apiUrl,token,vendorImage} from '../Config';
 
-
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {saveUserDetailsAction} from '../redux/cart_action';
 class Login extends Component{
     
     constructor(){
         super()
 
         this.state = {
-            dataSource:[],
-            isLoading:true,
+            email:'',
+            password:'',
+            loginLoading:false,
           
         }
-  
        
     }
 
-    
-    
-    
-    
-  
-    render(){
-
-        return ( 
-            <View>
+    registerHandler = () =>{
             
-                <Container>
-                   <Text>Login</Text>
-                </Container>
+        this.props.navigation.navigate('Register');
+    }
+
+    
+
+    loginHandler = () => {
+        Keyboard.dismiss();
+        this.setState({
+            loginLoading:true
+        })
+        var value = this.state;
+
+        if (value.email!='' || value.password!=''){
+
+            let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+            if (reg.test(value.email) === false) {
+                
+                Toast.show({
+                    text:'Invalid Email',
+                    buttonText:'Okay',
+                    style:{backgroundColor:'red'}
+                   
+                })
+            }
+            else {
+                
+                fetch(apiUrl+'login',{
+                    method:"POST",
+                    headers: {
+                        'Content-Type': 'application/json','token':token
+                    },
+                    body: JSON.stringify({
+                        email: value.email,
+                        password: value.password,
+                    })
+                    
+                })
+                .then(response => {
+                    
+                    if (!response.ok) {                      
+                        throw new Error(                    
+                            "HTTP status " + response.status 
+                        );                                   
+                    }              
+                                    
+                    return response.json();      
+                })
+                .then((contents)=>{
+
+                    if(contents.token){
+                        
+                        AsyncStorage.setItem('userDetails',
+                        JSON.stringify({
+                            name:contents.name,
+                            email:contents.email,
+                            user_id:contents.id,
+                            role_id:contents.role_id,
+                        }));
+
+                        this.props.saveUserDetailsAction({
+                            name:contents.name,
+                            email:contents.email,
+                            user_id:contents.id,
+                            role_id:contents.role_id,
+                            token:contents.token
+
+                        });
+                        this.props.navigation.navigate('Checkout');
+                        
+                    }
+                    else{
+                        Toast.show({
+                            text:'Invalid Email or Password',
+                            buttonText:'Okay',
+                            style:{backgroundColor:'red'}
+                           
+                        })
+                    }
+                })
+                .catch((error)=>{
+                    console.log(error)
+                })
+              
+            }
             
                 
+
+        }
+
+        else{
+            Toast.show({
+                text:'The fields are required',
+                buttonText:'Okay',
+                style:{backgroundColor:'red'}
+               
+            })
+        }
+
+        this.setState({
+            loginLoading:false
+        })
+    }
+
+    
+    render(){
+
+        
+
+        return ( 
+
+            this.state.loginLoading
+            ?
+            <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+                <ActivityIndicator size="large" color="#ffb200" animating  />
             </View>
+            :
+
+            <Root>
+             
+                <Container>
+                    <Content>
+                        <Form>
+                            <Item floatingLabel>
+                                <Label>Email</Label>
+                                <Input onChangeText={(email) => this.setState({email})}/>
+                            </Item>
+                            <Item floatingLabel last>
+                                <Label>Password</Label>
+                                <Input secureTextEntry onChangeText={(password) => this.setState({password})}/>
+                            </Item>
+
+                            <View style={{marginTop:50}}>
+                                <Button warning full onPress={this.loginHandler}><Title>Login</Title></Button>
+                            </View>
+                            <View>
+                                <Row>
+                                    <Text style={{marginLeft:10, marginTop:10}}>You don't have an account?</Text>
+                                    <TouchableOpacity onPress={this.registerHandler}>
+                                        <Text style={{marginLeft:10, marginTop:10,color:'red'}}>Register here</Text>
+                                    </TouchableOpacity>
+                                </Row>
+                            </View>
+                        </Form>
+                    </Content>
+                </Container>
+                
+            </Root>
+           
         );
     }
 }
@@ -54,4 +195,18 @@ const styles = StyleSheet.create({
 });
 
 
-export default Login;
+const mapStateToProp = (state) =>{
+
+    return {
+        cart:state.cart,
+        user:state.user
+    }
+}
+
+const mapActionstoProps = (dispatch) => {
+    return bindActionCreators({
+        saveUserDetailsAction
+    },dispatch)
+}
+
+export default connect(mapStateToProp,mapActionstoProps)(Login);

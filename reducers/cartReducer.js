@@ -1,5 +1,4 @@
-import { ADD_TO_CART } from '../redux/cart_action';
-import { REMOVE_FROM_CART } from '../redux/cart_action';
+import { ADD_TO_CART, REMOVE_FROM_CART } from '../redux/cart_action';
 const initial_state = [{
     id: 4,
     name: 'Amala',
@@ -26,6 +25,7 @@ export default function cartReducer(state = [], action = {}) {
             {
                 return state.filter(cartItem => cartItem.id !== action.payload.id)
             }
+
     }
     return state
 }

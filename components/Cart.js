@@ -4,33 +4,50 @@ import {
   TouchableOpacity,
   View,
   Text,
-  Button
    } from 'react-native';
 
 import{
   Container,Header,Body,CheckBox,Title,Card,
   CardItem,Left,Right,Content,Grid,
-  Col,Icon, Subtitle,Thumbnail
+  Col,Icon, Subtitle,Thumbnail,Button
 } from 'native-base';
 
 import {connect} from 'react-redux';
-import {removeFromCartAction} from '../redux/cart_action';
-import {addToCartAction} from '../redux/cart_action';
+import {removeFromCartAction,addToCartAction,saveCartSummaryAction} from '../redux/cart_action';
 import {bindActionCreators} from 'redux';
-import InputSpinner from "react-native-input-spinner";
+import {AsyncStorage} from 'react-native';
 
 class Cart extends Component{
     
     constructor(){
-        super()
+      super()
        
     }
 
     
-    checkoutHandler(){
-      this.props.navigation.navigate('Login');
-    }
     
+    checkoutHandler  = async(totalAmount) => {
+      let userDetails = this.props.user;
+      let Vendor = await AsyncStorage.getItem('cartVendor');
+      let vendorCart = JSON.parse(Vendor);
+      this.props.saveCartSummaryAction({
+        vendor_id:vendorCart.id,
+        cart_amount:totalAmount,
+        vendor:vendorCart.name
+      });
+
+      if(userDetails.token){
+        this.props.navigation.navigate('Checkout');
+      }
+      else{
+        this.props.navigation.navigate('Login');
+      }
+
+      
+      
+            
+      
+    }
     removeCartAction = (item) =>{    
 
       this.props.removeFromCartAction(item);
@@ -56,9 +73,9 @@ class Cart extends Component{
   
     render(){
 
-     
       const cartList=[];
       const cart=this.props.cart;
+      var totalAmount = 0;
 
       const removeCart=(item)=>{
           this.removeCartAction(item);
@@ -66,7 +83,7 @@ class Cart extends Component{
       if(cart.length>0){
 
         for(let i=0; i<cart.length; i++){
-          
+          totalAmount = totalAmount+cart[i].price * cart[i].qty;
           
           cartList.push(
 
@@ -81,7 +98,7 @@ class Cart extends Component{
                     <Subtitle style={{color:'black', marginLeft:6}}>{cart[i].name}</Subtitle>
 
                     {cart[i].details.map((row, index) => (
-                      <Text style={{marginLeft:10}}>{row.name}</Text>
+                      <Text key={cart[i].id+row.idstockdetails} style={{marginLeft:10}}>{row.name}</Text>
                     ))}
                    
                     
@@ -93,11 +110,11 @@ class Cart extends Component{
                 <Grid>
                   
                   <TouchableOpacity onPress={()=>this.updateQuantity(1,cart[i])}>
-                    <Title style={{color:'black', marginRight:10, fontSize:23}}>+</Title>
+                    <Title style={{color:'black', marginRight:20, fontSize:40}}>+</Title>
                   </TouchableOpacity>
-                    <Title style={{color:'#ffb200',fontSize:12,marginTop:5}}>{cart[i].qty}</Title>
+                    <Title style={{color:'#ffb200',fontSize:12,marginTop:10,marginRight:5}}>{cart[i].qty}</Title>
                     <TouchableOpacity onPress={()=>this.updateQuantity(0,cart[i])}>
-                      <Title style={{color:'black', marginLeft:10, fontSize:23}}>-</Title>
+                      <Title style={{color:'black', marginLeft:10, fontSize:50}}>-</Title>
                   </TouchableOpacity>
                 </Grid>
                 
@@ -109,7 +126,16 @@ class Cart extends Component{
             </Card>
           );
         };
+
+        
+
       }
+
+      
+
+      
+
+
 
 
         return (  
@@ -126,9 +152,33 @@ class Cart extends Component{
               
               {cartList}
 
-               <Button title="Checkout" onPress={this.checkoutHandler} color='#ffb200'/>
 
-               
+              <Card style={{alignItems:'center'}}>
+                <CardItem header>
+
+                    <Left>
+
+                      <View>
+                        <Title style={{color:'black'}}>Sub Total:</Title>
+                      </View>
+                    
+                    </Left>
+
+                     <Right>
+
+                      <View>
+                        <Title style={{color:'black'}}>‎₦ {totalAmount}</Title>
+                      </View>
+                    
+                    </Right>
+
+
+                </CardItem>   
+              </Card>
+
+              <View>
+                <Button full warning onPress={()=>this.checkoutHandler(totalAmount)}><Title>Checkout</Title></Button>
+               </View>
               
             </Content>
            
@@ -148,7 +198,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProp = (state) =>{
   return {
-      cart:state.cart
+      cart:state.cart,
+      user:state.user
   }
 }
 
@@ -156,7 +207,8 @@ const mapStateToProp = (state) =>{
 const mapActionstoProps = (dispatch) => {
   return bindActionCreators({
       removeFromCartAction,
-      addToCartAction
+      addToCartAction,
+      saveCartSummaryAction,
   },dispatch)
 }
 

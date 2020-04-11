@@ -15,6 +15,7 @@ import Cart from './Cart';
 import HomeScreen from './HomeScreen';
 import Login from '../components/Login';
 import Register from '../components/Register';
+import Checkout from '../components/Checkout';
 
 class Splash extends Component{
     
@@ -112,10 +113,56 @@ const screens = {
         }),
     },
     Login:{
-        screen:Login
+        screen:Login,
+        navigationOptions:({navigation}) => ({
+            
+            headerBackTitle: null,
+            headerRight: (
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('Cart')}>
+
+                    <CartIcon/>
+                </TouchableOpacity>
+               
+            )
+            
+            
+        }),
     },
     Register:{
-        screen:Register
+        screen:Register,
+        navigationOptions:({navigation}) => ({
+            
+            headerBackTitle: null,
+            headerRight: (
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('Cart')}>
+
+                    <CartIcon/>
+                </TouchableOpacity>
+               
+            )
+            
+            
+        }),
+    },
+    Checkout:{
+        screen:Checkout,
+        navigationOptions:({navigation}) => ({
+            
+            headerBackTitle: null,
+            headerRight: (
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('Cart')}>
+
+                    <CartIcon/>
+                </TouchableOpacity>
+               
+            )
+            
+            
+        }),
+
     }
 }
 const HomeStack =createStackNavigator(screens);
